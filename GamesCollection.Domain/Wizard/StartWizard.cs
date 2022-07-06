@@ -1,6 +1,4 @@
-﻿using System.Dynamic;
-
-namespace GamesCollection.Domain.Wizard;
+﻿namespace GamesCollection.Domain.Wizard;
 
 public abstract class StartWizard
 {
