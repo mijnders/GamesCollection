@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace GamesCollection.Domain
+﻿namespace GamesCollection.Domain
 {
     public class LoadFiles
     {

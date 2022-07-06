@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GamesCollection.Domain.Wizard
+﻿namespace GamesCollection.Domain.Wizard
 {
     public class StartWizard
     {
@@ -119,11 +112,31 @@ namespace GamesCollection.Domain.Wizard
             var topCard = Cards[random.Next(Cards.Count)];
             Cards.Remove(topCard);
             Console.Clear();
-            WhenReset("Wizard", 0);
-            Console.WriteLine($"Stack:\t{topCard.Species[..1]}{topCard.Value}");
             for (var i = 0; i < quantity; i++)
             {
+                WhenReset("Wizard", 0);
+                Console.WriteLine();
+                Console.Write($"Stack:\t\t");
+                Console.ForegroundColor = topCard.Color;
+                Console.Write(topCard.Species[..1] + topCard.Value);
+                Console.ResetColor();
+                Console.WriteLine();
                 WhenReset("Player", i + 1);
+                Console.WriteLine();
+                Console.Write("Player ");
+                Console.Write(i + 1);
+                Console.Write(" press Enter");
+                Console.ReadKey();
+                Console.Clear();
+                WhenReset("Wizard", 0);
+                Console.WriteLine();
+                Console.Write($"Stack:\t\t");
+                Console.ForegroundColor = topCard.Color;
+                Console.Write(topCard.Species[..1] + topCard.Value);
+                Console.ResetColor();
+                Console.WriteLine();
+                WhenReset("Player", i + 1);
+                Console.WriteLine();
                 Console.Write($"on hand:\t");
                 foreach (var card in HandCardsList.Select(cards => cards[i]))
                 {
@@ -143,12 +156,21 @@ namespace GamesCollection.Domain.Wizard
                     Console.ResetColor();
                 }
                 Console.WriteLine();
+                Console.WriteLine();
                 Console.WriteLine(Translator.Translate("Please make your prediction"));
+                Console.Write(Translator.Translate("Remember that only "));
+                Console.Write(round);
+                if(round <= 1) Console.Write(Translator.Translate(" trick is possible"));
+                else Console.WriteLine(Translator.Translate(" tricks are possible"));
+                Console.WriteLine();
                 Console.Write(Translator.Translate("Your Choice: "));
                 var input = Console.ReadLine();
-                if(string.IsNullOrEmpty(input) | int.TryParse(input, out int result))
+                if (!string.IsNullOrEmpty(input) | int.TryParse(input, out int result))
+                {
+                    predictInts.Add(result);
+                }
+                Console.Clear();
             }
-            Console.ReadKey();
         }
 
         private static void CardRestock()
