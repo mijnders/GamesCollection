@@ -41,11 +41,9 @@
                     }
                 }
             }
-            else
-            {
-                return new List<string[]>();
-            }
-            
+
+            return new List<string[]>();
+
         }
 
     }

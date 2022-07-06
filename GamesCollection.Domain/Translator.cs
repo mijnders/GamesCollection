@@ -40,10 +40,8 @@
                     indexOfText = Translation.IndexOf(translate);
                     break;
                 }
-                else
-                {
-                    indexOfText = -1;
-                }
+
+                indexOfText = -1;
             }
 
             if (indexOfText != -1 && indexOf <= Translation.Count && indexOfText <= Translation.First().Length)

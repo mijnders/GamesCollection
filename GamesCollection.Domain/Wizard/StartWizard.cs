@@ -5,14 +5,13 @@
         private static readonly string[] Species = { "Human", "Dwarf", "Elves", "Giant" };
         internal static readonly List<WizardCard> Cards = new();
         internal static List<WizardCard[]> HandCardsList = new();
-        internal static List<int> predictInts = new List<int>();
-        static bool inputInvalid;
+        internal static List<int> PredictInt = new();
+        private static bool _inputInvalid;
         public static void Start()
         {
             CardRestock();
             while (true)
             {
-                var chosenShapes = new string[2];
                 Console.Write(Translator.Translate("Do you want to play against the "));
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.Write(Translator.Translate("Computer") + "(c)");
@@ -32,7 +31,7 @@
                 Console.ResetColor();
                 Console.Write(Translator.Translate(" to end the game."));
                 Console.WriteLine();
-                if (inputInvalid) InputInvalid();
+                if (_inputInvalid) InputInvalid();
                 Console.Write(Translator.Translate("Your choice: "));
                 var chosenOpponent = Console.ReadLine();
                 if (chosenOpponent != null)
@@ -56,7 +55,7 @@
                         default:
                             Console.Clear();
                             WhenReset("Wizard", 0);
-                            inputInvalid = true;
+                            _inputInvalid = true;
                             break;
                     }
                 Console.WriteLine();
@@ -81,6 +80,7 @@
                     for (var i = 0; i < Cards.Count / result; i++)
                     {
                         HandOutCards(result, round);
+                        GetPredictions(result, round);
                         CardRestock();
                         round++;
                     }
@@ -95,31 +95,13 @@
                 }
             }
         }
-        private static void HandOutCards(int quantity, int round)
+
+        private static void GetPredictions(int quantity, int round)
         {
-            HandCardsList = new List<WizardCard[]>();
-            var random = new Random();
-            for (var i = 0; i < round; i++)
-            {
-                var cards = new WizardCard[quantity];
-                for (var j = 0; j < quantity; j++)
-                {
-                    cards[j] = Cards[random.Next(Cards.Count)];
-                    Cards.Remove(cards[j]);
-                }
-                HandCardsList.Add(cards);
-            }
-            var topCard = Cards[random.Next(Cards.Count)];
-            Cards.Remove(topCard);
-            Console.Clear();
             for (var i = 0; i < quantity; i++)
             {
                 WhenReset("Wizard", 0);
                 Console.WriteLine();
-                Console.Write($"Stack:\t\t");
-                Console.ForegroundColor = topCard.Color;
-                Console.Write(topCard.Species[..1] + topCard.Value);
-                Console.ResetColor();
                 Console.WriteLine();
                 WhenReset("Player", i + 1);
                 Console.WriteLine();
@@ -130,14 +112,10 @@
                 Console.Clear();
                 WhenReset("Wizard", 0);
                 Console.WriteLine();
-                Console.Write($"Stack:\t\t");
-                Console.ForegroundColor = topCard.Color;
-                Console.Write(topCard.Species[..1] + topCard.Value);
-                Console.ResetColor();
                 Console.WriteLine();
                 WhenReset("Player", i + 1);
                 Console.WriteLine();
-                Console.Write($"on hand:\t");
+                Console.Write("on hand:\t");
                 foreach (var card in HandCardsList.Select(cards => cards[i]))
                 {
                     Console.ForegroundColor = card.Color;
@@ -160,17 +138,34 @@
                 Console.WriteLine(Translator.Translate("Please make your prediction"));
                 Console.Write(Translator.Translate("Remember that only "));
                 Console.Write(round);
-                if(round <= 1) Console.Write(Translator.Translate(" trick is possible"));
+                if (round <= 1) Console.Write(Translator.Translate(" trick is possible"));
                 else Console.WriteLine(Translator.Translate(" tricks are possible"));
                 Console.WriteLine();
                 Console.Write(Translator.Translate("Your Choice: "));
                 var input = Console.ReadLine();
                 if (!string.IsNullOrEmpty(input) | int.TryParse(input, out int result))
                 {
-                    predictInts.Add(result);
+                    PredictInt.Add(result);
                 }
                 Console.Clear();
             }
+        }
+
+        private static void HandOutCards(int quantity, int round)
+        {
+            HandCardsList = new List<WizardCard[]>();
+            var random = new Random();
+            for (var i = 0; i < round; i++)
+            {
+                var cards = new WizardCard[quantity];
+                for (var j = 0; j < quantity; j++)
+                {
+                    cards[j] = Cards[random.Next(Cards.Count)];
+                    Cards.Remove(cards[j]);
+                }
+                HandCardsList.Add(cards);
+            }
+            Console.Clear();
         }
 
         private static void CardRestock()
