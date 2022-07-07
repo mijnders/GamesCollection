@@ -2,15 +2,10 @@
 
 public class Player
 {
+    public string Name;
     public int PlayerNumber;
-    public WizardCard[] CardsOnHand;
-
+    public Deck CardsOnHand;
     public int Prediction;
-
-    public Player(int playerNumber, WizardCard[] cardsOnHand, int prediction)
-    {
-        this.PlayerNumber = playerNumber;
-        this.CardsOnHand = cardsOnHand;
-        this.Prediction = prediction;
-    }
+    public int Tricks;
+    public int Point;
 }
