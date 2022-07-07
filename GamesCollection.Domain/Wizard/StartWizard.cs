@@ -34,7 +34,7 @@ public abstract class StartWizard
                 }
                 for (var currentRound = 0; currentRound < round; currentRound++)
                 {
-                    if (currentRound > 0) FillStack();
+                    ResetStack(true);
                     foreach (var currentPlayer in CurrentPlayers)
                     {
                         Console.Clear();
@@ -177,11 +177,11 @@ public abstract class StartWizard
                 WizardCardDeck.Cards.Remove(selectedCard);
             }
         }
-        FillStack();
+        ResetStack(false);
         return cards;
     }
 
-    private static void FillStack()
+    private static void ResetStack(bool onlyReset)
     {
         var rand = new Random();
         Stack = new Deck
@@ -189,7 +189,7 @@ public abstract class StartWizard
             Cards = new List<WizardCard>(),
             PlayedPlayer = new List<Player>()
         };
-        if (WizardCardDeck.Cards.Count <= 0) return;
+        if (WizardCardDeck.Cards.Count <= 0 && onlyReset) return;
         var card = WizardCardDeck.Cards[rand.Next(WizardCardDeck.Cards.Count)];
         Stack.Cards.Add(card);
         WizardCardDeck.Cards.Remove(card);
@@ -214,15 +214,8 @@ public abstract class StartWizard
             Console.Write($"Player {playerIndex}:\t");
             ShowHandCards(currentPlayersDeck);
             Console.WriteLine();
-            if (Stack != null && Stack.Cards.Count != 0 && Stack.Cards.First().Value == 14 && Stack.Cards.First().Color == ConsoleColor.White)
-            {
-                Stack.Cards.Add(new WizardCard("")); = GetTrump(Stack.Cards.First());
-                if (Stack.Cards.First().Color == ConsoleColor.White)
-                {
-                    Program.IsValid = false;
-                    continue;
-                }
-            }
+            //Schleife um Stack und PlayerDeck
+            if (Stack.Cards.Count == 1 && Stack.Cards.First().Value == 14) GetTrump();
             if (!Program.IsValid) Program.FalseInput();
             Console.WriteLine("Insert your prediction");
             var input = Console.ReadLine();
@@ -236,15 +229,57 @@ public abstract class StartWizard
         }
     }
 
-    private static ConsoleColor GetTrump(WizardCard card)
+    private static void GetTrump()
     {
-        Console.WriteLine("Please choose the trump");
-        Console.WriteLine("Blue, Red, Green or Yellow");
-        var trump = Console.ReadLine();
-        if (string.IsNullOrEmpty(trump)) return card.Color;
-        var consoleColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), trump);
-        if (consoleColor == ConsoleColor.Blue | consoleColor == ConsoleColor.Red | consoleColor == ConsoleColor.Green | consoleColor == ConsoleColor.Yellow) return consoleColor;
-        return card.Color;
+        while (Stack.Cards.First().Color == ConsoleColor.White)
+        {
+            Console.WriteLine("Select on of the following Colors as Trump Color");
+            foreach (var specy in Species)
+            {
+                DisplayCard(new WizardCard(specy, -1));
+                if (Species.Last() != specy) Console.Write(", ");
+            }
+
+            Console.WriteLine();
+            var colorInput = Console.ReadLine();
+            if (string.IsNullOrEmpty(colorInput)) continue;
+            if (Enum.TryParse(colorInput, out ConsoleColor resultColor) |
+                int.TryParse(colorInput, out int colorIndex))
+            {
+                if (resultColor == ConsoleColor.Red | resultColor == ConsoleColor.Blue |
+                    resultColor == ConsoleColor.Yellow | resultColor == ConsoleColor.Green)
+                {
+                    Stack.Cards.First().Color = resultColor;
+                }
+
+                if (colorIndex <= Species.Length)
+                {
+                    Stack.Cards.First().Color = colorIndex switch
+                    {
+                        1 => ConsoleColor.Blue,
+                        2 => ConsoleColor.Red,
+                        3 => ConsoleColor.Green,
+                        4 => ConsoleColor.Yellow,
+                        _ => ConsoleColor.White
+                    };
+                }
+            }
+            else
+            {
+                Stack.Cards.First().Color = colorInput switch
+                {
+                    "Human" => ConsoleColor.Blue,
+                    "Dwarf" => ConsoleColor.Red,
+                    "Elves" => ConsoleColor.Green,
+                    "Giant" => ConsoleColor.Yellow,
+                    "H" => ConsoleColor.Blue,
+                    "D" => ConsoleColor.Red,
+                    "E" => ConsoleColor.Green,
+                    "G" => ConsoleColor.Yellow,
+                    _ => ConsoleColor.White
+                };
+            }
+        }
     }
 
     private static Deck CreateDeck()
@@ -280,6 +315,9 @@ public abstract class StartWizard
                 break;
             case 14:
                 Console.Write("Z ");
+                break;
+            case -1:
+                Console.Write($"{card.Color}({card.Species[..1]})");
                 break;
             default:
                 Console.Write(card.Species[..1] + card.Value + " ");
