@@ -24,9 +24,6 @@ public class WizardLogic
             var difference = Math.Abs(player.Prediction - player.Tricks);
             player.ExperiencePoints -= difference * 10;
         }
-
-        player.Tricks = 0;
-        player.Prediction = 0;
     }
 
     public static List<WizardPlayer> SortWizardPlayers(List<WizardPlayer> wizardPlayers, int indexofFirst)
@@ -51,7 +48,7 @@ public class WizardLogic
         {
             return playedBy[stack.Deck.IndexOf(card)];
         }
-        var trumpList = stack.Deck.Where(card => card.Species == trumpSpecies && card.Value != 14)
+        var trumpList = stack.Deck.Where(card => card.Species == trumpSpecies && card.Value != 14 && card.Value != 0)
             .ToList();
         if (trumpList.Count > 0)
         {
@@ -75,14 +72,15 @@ public class WizardLogic
 
     public static WizardCard CheckCard(List<WizardCard> OnHandCards, string? input)
     {
-        if (string.IsNullOrEmpty(input)) return null;
+        if (string.IsNullOrEmpty(input) && OnHandCards.Count > 1) return null;
+        if (string.IsNullOrEmpty(input) && OnHandCards.Count == 1) return OnHandCards.First();
         foreach (var wizardCard in OnHandCards.Where(wizardCard => wizardCard.Title == input | input == wizardCard.Title[..1]))
         {
             return wizardCard;
         }
-        if (int.TryParse(input, out var result) && result < OnHandCards.Count && result > 0)
+        if (int.TryParse(input, out var result) && result <= OnHandCards.Count && result > 0)
         {
-            return OnHandCards[result];
+            return OnHandCards[result- 1];
         }
         return null;
     }
@@ -94,7 +92,7 @@ public class WizardLogic
         {
             return card;
         }
-        return onHandCards.Count(item => item.Species == species & item.Value < 14 & item.Value > 0) != 0 ? null : card;
+        return onHandCards.Any(item => item.Species == species & item.Value < 14 & item.Value > 0) ? null : card;
     }
     public static ConsoleColor ValidateChosenColor(string input)
     {

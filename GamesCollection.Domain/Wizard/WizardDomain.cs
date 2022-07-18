@@ -12,7 +12,7 @@ internal class WizardDomain
     {
         var playerCount = GetPlayerCount();
         WizardPlayers = CreatePlayers(playerCount, GetPlayersNames(playerCount));
-        for (var stitchRound = 4; stitchRound <= (60 / playerCount); stitchRound++)
+        for (var stitchRound = 3; stitchRound <= (60 / playerCount); stitchRound++)
         {
             MainCardDeck = CreateMainDeck();
             var wizardCardsForHands = HandsOutCards(stitchRound, playerCount, MainCardDeck);
@@ -22,12 +22,12 @@ internal class WizardDomain
             {
                 Deck = new List<WizardCard>()
             };
-            if (!string.IsNullOrEmpty(TrumpSpecies) && TrumpSpecies == "Wizard") TrumpSpecies = ChooseTrumpSpecies(firstPlayer, TrumpSpecies);
             var modulo = (stitchRound - 1) % playerCount;
             WizardPlayers = SortWizardPlayers(new List<WizardPlayer>(WizardPlayers.OrderBy(item => item.Id)), modulo);
             for (var playerIndex = 0; playerIndex < playerCount; playerIndex++)
             {
                 WizardPlayers[playerIndex].OnHandCards = wizardCardsForHands[playerIndex];
+                if (!string.IsNullOrEmpty(TrumpSpecies) && TrumpSpecies == "Wizard") TrumpSpecies = ChooseTrumpSpecies(firstPlayer, TrumpSpecies);
                 WizardPlayers[playerIndex].Prediction = GetPrediction(WizardPlayers[playerIndex]);
             }
             for (var round = 0; round < stitchRound; round++)
@@ -62,10 +62,21 @@ internal class WizardDomain
     {
         BuildUpInterface();
         Program.ClearConsole("Intermediate", false);
+        Console.WriteLine();
+        foreach (var player in WizardPlayers)
+        {
+            Console.Write($"{player.Name}: {player.Tricks}/{player.Prediction}");
+            if(player != WizardPlayers.Last()) Console.Write(";\t");
+            player.Tricks = 0;
+            player.Prediction = 0;
+        }
+        Console.WriteLine();
+        Console.WriteLine();
         foreach (var player in WizardPlayers)
         {
             Console.Write($"{player.Name}: {player.ExperiencePoints}");
-            if(player != WizardPlayers.Last()) Console.Write(";\t");
+            if (player != WizardPlayers.Last() && player.ExperiencePoints.ToString().Length > 2) Console.Write(";\t");
+            else if (player != WizardPlayers.Last()) Console.Write(";\t\t");
         }
         Console.WriteLine();
         Console.ReadKey();
@@ -154,7 +165,14 @@ internal class WizardDomain
             var prediction = wizardPlayer.Prediction;
             var tricks = wizardPlayer.Tricks;
             var difference = tricks - prediction;
-            Console.Write(wizardPlayer.Name[..3] + ": ");
+            if(wizardPlayer.Name.Length <= 3)
+            {
+                Console.Write(wizardPlayer.Name + ": ");
+            }
+            else
+            {
+                Console.Write(wizardPlayer.Name[..3] + ": ");
+            }
             Console.Write(wizardPlayer.Tricks);
             var status = DisplayPredictionStatus(difference);
             Console.Write(status);
