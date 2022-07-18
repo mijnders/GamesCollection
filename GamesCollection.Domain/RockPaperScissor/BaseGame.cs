@@ -14,7 +14,7 @@ internal class BaseGame
             var chosenShapes = new string[2];
             Console.Write(Translator.Translate("Do you want to play against the "));
             Console.ForegroundColor = ConsoleColor.Blue;
-            Console.Write(Translator.Translate("Computer") + "(c)");
+            Console.Write(Translator.Translate("COM") + "(c)");
             Console.ResetColor();
             Console.Write(Translator.Translate(" or against another "));
             Console.ForegroundColor = ConsoleColor.Magenta;
@@ -127,7 +127,7 @@ internal class BaseGame
         }
         else
         {
-            Console.WriteLine(Translator.Translate("Computer played: ") + player2[..1].ToUpper() + player2[1..] + "\n");
+            Console.WriteLine(Translator.Translate("COM played: ") + player2[..1].ToUpper() + player2[1..] + "\n");
         }
         switch (string.Join(",", chosenShapes))
         {
@@ -162,7 +162,7 @@ internal class BaseGame
                 break;
             case 1 when !vsPlayer:
                 Console.ForegroundColor = ConsoleColor.Magenta;
-                Console.WriteLine(Translator.Translate("Computer wins!"));
+                Console.WriteLine(Translator.Translate("COM wins!"));
                 break;
             case -1:
                 Console.ForegroundColor = ConsoleColor.Red;

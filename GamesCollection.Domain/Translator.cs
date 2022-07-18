@@ -16,7 +16,7 @@ public class Translator
         {
             return Translation[Translation.IndexOf(translate)][TranslationIndex];
         }
-        return englishText;
+        return "[" + englishText + "]";
     }
     public static string TranslateBackwards(string text)
     {

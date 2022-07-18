@@ -1,4 +1,5 @@
-﻿using GamesCollection.Domain.RockPaperScissor;
+﻿using System.Text;
+using GamesCollection.Domain.RockPaperScissor;
 using GamesCollection.Domain.Wizard;
 
 namespace GamesCollection.Domain;
@@ -9,6 +10,7 @@ public class Program
     public static bool IsValid { get; set; }
     private static void Main()
     {
+        Console.OutputEncoding = Encoding.Unicode;
         IsValid = true;
         Console.ResetColor();
         LoadFiles.LoadOnStartup();
@@ -19,7 +21,8 @@ public class Program
         do
         {
             Console.Clear();
-            ClearConsole("Main menu");
+            ClearConsole("Main menu", true);
+            Console.WriteLine();
             Console.WriteLine(Translator.Translate("Welcome to the game collection, please choose one of the options below."));
             Console.WriteLine();
             if (games.Count == 0)
@@ -31,11 +34,12 @@ public class Program
             {
                 Console.WriteLine($"{i}. {games[i]}");
             }
-
+            Console.WriteLine();
             if (!IsValid)
             {
                 FalseInput();
             }
+            Console.Write(Translator.Translate("Your choice: "));
             var input = Console.ReadLine();
             if (!string.IsNullOrEmpty(input) && int.TryParse(input, out var result))
             {
@@ -48,6 +52,7 @@ public class Program
             }
             else if (!string.IsNullOrEmpty(input) && games.FindIndex(item => string.Equals(item, input, StringComparison.CurrentCultureIgnoreCase)) != -1)
             {
+                IsValid = true;
                 StartGame(Translator.TranslateBackwards(input));
             }
             else
@@ -60,12 +65,12 @@ public class Program
         Console.Clear();
     }
 
-    private static void ChoseLanguage(List<string[]> languages)
+    private static void ChoseLanguage(IReadOnlyCollection<string[]> languages)
     {
         while (true)
         {
             Console.Clear();
-            ClearConsole("Languages");
+            ClearConsole("Languages", true);
             var availableLanguages = languages.First().ToList();
             foreach (var availableLanguage in availableLanguages)
             {
@@ -81,7 +86,7 @@ public class Program
             }
             Console.WriteLine();
             if (!IsValid) FalseInput();
-            Console.Write(Translator.Translate("Your choice:"));
+            Console.Write("Your choice: ");
             var input = Console.ReadLine();
             if (string.IsNullOrEmpty(input)) IsValid = false;
             else if (int.TryParse(input, out var result))
@@ -107,8 +112,8 @@ public class Program
     {
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine(Translator.TranslationIndex == -1
-            ? "Your last entry was invalid. Please try again"
-            : Translator.Translate("Your last entry was invalid. Please try again"));
+            ? "Your last entry was invalid. Please try again."
+            : Translator.Translate("Your last entry was invalid. Please try again."));
         Console.ResetColor();
         IsValid = true;
     }
@@ -123,9 +128,10 @@ public class Program
         return newGamesList;
     }
 
-    public static void ClearConsole(string name)
+    public static void ClearConsole(string name, bool clear)
     {
-        Console.Clear();
+        if(clear) Console.Clear();
+        else Console.WriteLine();
         var width = (Console.WindowWidth - Translator.Translate(name).Length) / 2;
         for (var i = 0; i < width; i++) Console.Write("-");
         Console.Write(Translator.Translate(name));
@@ -136,11 +142,13 @@ public class Program
     public static bool ValidateInteger(int result, Range range)
         
     {
-        return result >= range.Start.Value && result <= range.End.Value;
+        IsValid = result >= range.Start.Value && result <= range.End.Value;
+        return IsValid;
     }
 
     public static void StartGame(string game)
     {
+        ClearConsole(Translator.Translate(game), true);
         switch (game)
         {
             case "Mau-Mau":
@@ -148,7 +156,7 @@ public class Program
             case "Uno":
                 break;
             case "Wizard":
-                StartWizard.Start();
+                WizardDomain.StartPoint();
                 break;
             case "Rock, Paper, Scissors":
                 BaseGame.Startup();
