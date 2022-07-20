@@ -12,7 +12,6 @@ internal class WizardDomain
         {
             var mainCardDeck = CreateMainDeck();
             var wizardCardsForHands = HandsOutCards(stitchRound, playerCount, mainCardDeck);
-            var firstPlayer = wizardPlayers[(stitchRound - 1) % playerCount];
             var trumpSpecies = GetTrumpSpecies(mainCardDeck);
             var stack = new WizardCardDeck
             {
@@ -20,11 +19,14 @@ internal class WizardDomain
             };
             var modulo = (stitchRound - 1) % playerCount;
             wizardPlayers = SortWizardPlayers(new List<WizardPlayer>(wizardPlayers.OrderBy(item => item.Id)), wizardPlayers.First(wizardPlayer => wizardPlayer.Id == modulo));
-            for (var playerIndex = 0; playerIndex < playerCount; playerIndex++)
+            foreach (var wizardPlayer in wizardPlayers)
             {
-                wizardPlayers[playerIndex].OnHandCards = wizardCardsForHands[playerIndex];
-                if (trumpSpecies == "Wizard") trumpSpecies = ChooseTrumpSpecies(firstPlayer, trumpSpecies);
-                wizardPlayers[playerIndex].Prediction = GetPrediction(wizardPlayers[playerIndex], stack, trumpSpecies, wizardPlayers);
+                wizardPlayer.OnHandCards = wizardCardsForHands[wizardPlayers.IndexOf(wizardPlayer)];
+                if (trumpSpecies == "Wizard")
+                {
+                    trumpSpecies = ChooseTrumpSpecies(wizardPlayer, trumpSpecies);
+                }
+                wizardPlayer.Prediction = GetPrediction(wizardPlayer, stack, trumpSpecies, wizardPlayers);
             }
             for (var round = 0; round < stitchRound; round++)
             {
@@ -42,8 +44,6 @@ internal class WizardDomain
                     }
 
                     playedBy.Add(currentPlayer.Id);
-                    Console.ReadKey();
-
                 }
                 var indexOfPlayer = CheckPlayedCards(playedBy, stack, trumpSpecies);
                 BuildUpInterface(trumpSpecies, stack, wizardPlayers);
@@ -61,10 +61,11 @@ internal class WizardDomain
             }
             Console.WriteLine();
             ShowIntermediate(wizardPlayers, trumpSpecies, stack);
+            Console.ReadKey();
             stack.Deck.Clear();
         }
 
-        Console.ReadKey();
+        
     }
 
     private static void ShowIntermediate(List<WizardPlayer> wizardPlayers, string trumpSpecies, WizardCardDeck stack)
@@ -88,7 +89,7 @@ internal class WizardDomain
             else if (player != new List<WizardPlayer>(wizardPlayers.OrderBy(item => item.Id)).Last()) Console.Write(";\t\t");
         }
         Console.WriteLine();
-        Console.ReadKey();
+        
     }
 
     private static WizardCard PlayCard(WizardPlayer currentPlayer, WizardCardDeck stack)
@@ -290,8 +291,15 @@ internal class WizardDomain
             Console.WriteLine();
             if (!Program.IsValid) Program.FalseInput();
             Console.WriteLine(Translator.Translate("Your choice: "));
-            var input = Console.ReadLine();
-            chosenColor = !string.IsNullOrEmpty(input) ? ValidateChosenColor(input) : ConsoleColor.Black;
+            if (!player.Com)
+            {
+                var input = Console.ReadLine();
+                chosenColor = !string.IsNullOrEmpty(input) ? ValidateChosenColor(input) : ConsoleColor.Black;
+            }
+            else
+            {
+                chosenColor = WizardCom.ChooseTrumpColor(player);
+            }
             if (chosenColor == ConsoleColor.Black)
             {
                 Program.IsValid = false;

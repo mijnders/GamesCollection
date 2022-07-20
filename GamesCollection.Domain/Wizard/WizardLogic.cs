@@ -8,7 +8,7 @@ public class WizardLogic
         var i = 0;
         foreach (var name in names)
         {
-            playerList.Add(new WizardPlayer(i, name.Key, name.Value, new List<WizardCard?>()));
+            playerList.Add(new WizardPlayer(i, name.Key, name.Value, new List<WizardCard>()));
             i++;
         }
         return playerList;
@@ -96,11 +96,11 @@ public class WizardLogic
         return highestCard != null ? playedBy[stack.Deck.IndexOf(highestCard)] : -1;
     }
 
-    public static WizardCard? CheckCard(List<WizardCard?> onHandCards, string? input)
+    public static WizardCard? CheckCard(List<WizardCard> onHandCards, string? input)
     {
         if (string.IsNullOrEmpty(input) && onHandCards.Count > 1) return null;
         if (string.IsNullOrEmpty(input) && onHandCards.Count == 1) return onHandCards.First();
-        foreach (var wizardCard in onHandCards.Where(wizardCard => wizardCard != null && wizardCard.Title == input | input == wizardCard.Title[..1]))
+        foreach (var wizardCard in onHandCards.Where(wizardCard => wizardCard.Title == input | input == wizardCard.Title[..1]))
         {
             return wizardCard;
         }
@@ -111,14 +111,14 @@ public class WizardLogic
         return null;
     }
 
-    public static WizardCard? CheckServe(List<WizardCard?> onHandCards, WizardCard? card, string? species)
+    public static WizardCard? CheckServe(List<WizardCard> onHandCards, WizardCard? card, string? species)
     {
         if (card != null && string.IsNullOrEmpty(species) | card.Value is 14 or 0) return card;
         if (card != null && card.Species == species)
         {
             return card;
         }
-        return onHandCards.Any(item => item != null && item.Species == species & item.Value < 14 & item.Value > 0) ? null : card;
+        return onHandCards.Any(item => item.Species == species & item.Value < 14 & item.Value > 0) ? null : card;
     }
     public static ConsoleColor ValidateChosenColor(string input)
     {
@@ -172,14 +172,12 @@ public class WizardLogic
         var trumpCard = HandsOutCards(1, 1, mainCardDeck);
         var list = trumpCard[0];
         var card = list[0];
-        if (card != null)
-            return card.Value switch
-            {
-                14 => card.Title,
-                0 => card.Title,
-                _ => card.Species
-            };
-        return "Wizard";
+        return card.Value switch
+        {
+            14 => card.Title,
+            0 => card.Title,
+            _ => card.Species
+        };
     }
 
     public static ConsoleColor GetConsoleColor(string? species, int value)
@@ -203,13 +201,13 @@ public class WizardLogic
             _ => ConsoleColor.Black,
         };
     }
-    public static List<WizardCard?>[] HandsOutCards(int round, int playerCount, WizardCardDeck mainCardDeck)
+    public static List<WizardCard>[] HandsOutCards(int round, int playerCount, WizardCardDeck mainCardDeck)
     {
         var rand = new Random();
-        var cards = new List<WizardCard?>[playerCount];
+        var cards = new List<WizardCard>[playerCount];
         for (var playerIndex = 0; playerIndex < playerCount; playerIndex++)
         {
-            cards[playerIndex] = new List<WizardCard?>();
+            cards[playerIndex] = new List<WizardCard>();
         }
         for (var roundIndex = 0; roundIndex < round; roundIndex++)
         {

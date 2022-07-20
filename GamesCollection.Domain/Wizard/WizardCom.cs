@@ -6,28 +6,32 @@
         {
             var prediction = 0;
             var copyMainDeck = new WizardCardDeck();
-            foreach (var playerOnHandCard in player.OnHandCards.Where(playerOnHandCard => playerOnHandCard != null))
+            foreach (var card in player.OnHandCards)
             {
-                if (playerOnHandCard != null) copyMainDeck.Deck.Remove(playerOnHandCard);
+                copyMainDeck.Deck.Remove(copyMainDeck.Deck.First(item => item.Value == card.Value && item.Species == card.Species));
             }
-            foreach (var card in player.OnHandCards.Where(card => card != null))
+            var indexes = (from mainCard in from card in player.OnHandCards from mainCard in copyMainDeck.Deck where card.Value == mainCard.Value && card.Species == mainCard.Species select mainCard select copyMainDeck.Deck.IndexOf(mainCard)).ToList();
+            foreach (var index in indexes)
             {
-                if (card != null)
-                    switch (card.Value)
-                    {
-                        case 14:
+                copyMainDeck.Deck.RemoveAt(index);
+            }
+            foreach (var card in player.OnHandCards)
+            {
+                switch (card.Value)
+                {
+                    case 14:
+                        prediction++;
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        if (GetChance(card, trump, copyMainDeck) < 20)
+                        {
                             prediction++;
-                            break;
-                        case 0:
-                            break;
-                        default:
-                            if (GetChance(card, trump, copyMainDeck) < 20)
-                            {
-                                prediction++;
-                            }
+                        }
 
-                            break;
-                    }
+                        break;
+                }
             }
             return prediction;
         }
@@ -55,57 +59,50 @@
             var playOffensive = player.Tricks < player.Prediction;
             if (speciesToServe == "all")
                 return playOffensive ? GetHighestCard(player.OnHandCards) : GetLowestCard(player.OnHandCards);
-            var listList = new List<List<WizardCard?>>
+            var listList = new List<List<WizardCard>>
             {
-                player.OnHandCards.Where(card => card != null && card.Species == speciesToServe && card.Value != 14 && card.Value != 0)
+                player.OnHandCards.Where(card => card.Species == speciesToServe && card.Value != 14 && card.Value != 0)
                     .ToList(),
-                player.OnHandCards.Where(card => card != null && card.Species == trump && card.Value != 14 && card.Value != 0).ToList(),
+                player.OnHandCards.Where(card => card.Species == trump && card.Value != 14 && card.Value != 0).ToList(),
                 player.OnHandCards.Where(card => card is {Value: 14 or 0}).ToList(),
                 player.OnHandCards
             };
             foreach (var list in listList.Where(list => list.Any()))
             {
-                list.Sort((x, y) =>
-                {
-                    if (x == null) return 0;
-                    return y != null ? x.Value.CompareTo(y.Value) : 0;
-                });
+                list.Sort((x, y) => x.Value.CompareTo(y.Value));
                 if (!playOffensive) list.Reverse();
                 var firstCard = list.First();
-                if (firstCard != null && list.Count == 1 && firstCard.Species == speciesToServe && firstCard.Value != 14 && firstCard.Value != 0 && !listList[2].Any()) return list.First();
+                if (list.Count == 1 && firstCard.Species == speciesToServe && firstCard.Value != 14 && firstCard.Value != 0 && !listList[2].Any()) return list.First();
                 foreach (var playerOnHandCard in list)
                 {
-                    if (playerOnHandCard != null)
+                    stack.Deck.Add(playerOnHandCard);
+                    playedBy.Add(player.Id);
+                    if (playOffensive)
                     {
-                        stack.Deck.Add(playerOnHandCard);
-                        playedBy.Add(player.Id);
-                        if (playOffensive)
+                        if (WizardLogic.CheckPlayedCards(playedBy, stack, trump) == player.Id)
                         {
-                            if (WizardLogic.CheckPlayedCards(playedBy, stack, trump) == player.Id)
-                            {
-                                stack.Deck.Remove(playerOnHandCard);
-                                playedBy.Remove(player.Id);
-                                return playerOnHandCard;
-                            }
-
-                            if (listList[2].Any(card => card is { Value: 14 }))
-                                return player.OnHandCards.First(card => card is { Value: 14 });
-                        }
-                        else
-                        {
-                            if (WizardLogic.CheckPlayedCards(playedBy, stack, trump) != player.Id)
-                            {
-                                stack.Deck.Remove(playerOnHandCard);
-                                playedBy.Remove(player.Id);
-                                return playerOnHandCard;
-                            }
-
-                            if (listList[2].Any(card => card is { Value: 0 }))
-                                return player.OnHandCards.First(card => card is { Value: 0 });
+                            stack.Deck.Remove(playerOnHandCard);
+                            playedBy.Remove(player.Id);
+                            return playerOnHandCard;
                         }
 
-                        stack.Deck.Remove(playerOnHandCard);
+                        if (listList[2].Any(card => card is { Value: 14 }))
+                            return player.OnHandCards.First(card => card is { Value: 14 });
                     }
+                    else
+                    {
+                        if (WizardLogic.CheckPlayedCards(playedBy, stack, trump) != player.Id)
+                        {
+                            stack.Deck.Remove(playerOnHandCard);
+                            playedBy.Remove(player.Id);
+                            return playerOnHandCard;
+                        }
+
+                        if (listList[2].Any(card => card is { Value: 0 }))
+                            return player.OnHandCards.First(card => card is { Value: 0 });
+                    }
+
+                    stack.Deck.Remove(playerOnHandCard);
 
                     playedBy.Remove(player.Id);
                 }
@@ -155,6 +152,12 @@
             }
 
             return lowestCard;
+        }
+
+        public static ConsoleColor ChooseTrumpColor(WizardPlayer player)
+        {
+            var highestCounter = WizardCardDeck.Species.Select(spec => player.OnHandCards.Count(item => item.Value != 14 && item.Value != 0 && item.Species == spec)).Prepend(0).Max();
+            return (from spec in WizardCardDeck.Species where player.OnHandCards.Count(item => item.Value != 14 && item.Value != 0 && item.Species == spec) == highestCounter select WizardLogic.ValidateChosenColor(spec)).FirstOrDefault();
         }
     }
 
