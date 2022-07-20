@@ -32,14 +32,15 @@
             return prediction;
         }
 
-        private static double GetChance(WizardCard? card, string trump, WizardCardDeck copyMainDeck)
+        private static double GetChance(WizardCard card, string trump, WizardCardDeck copyMainDeck)
         {
             var fakePlayedBy = new List<int>
             {
                 0,
                 1
             };
-            var strongerCards = (from deckCard in copyMainDeck.Deck let fakeStack = new WizardCardDeck() { Deck = new List<WizardCard?>() { card, deckCard } } where WizardLogic.CheckPlayedCards(fakePlayedBy, fakeStack, trump) != 0 select deckCard).ToList();
+            var strongerCards = (from deckCard in copyMainDeck.Deck where card != null let fakeStack = new WizardCardDeck() { Deck = new List<WizardCard>() { card, deckCard } } where WizardLogic.CheckPlayedCards(fakePlayedBy, fakeStack, trump) != 0 select deckCard).ToList();
+
             return (double.Parse(strongerCards.Count.ToString()) / double.Parse(copyMainDeck.Deck.Count.ToString())) * 100;
         }
 
