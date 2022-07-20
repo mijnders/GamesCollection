@@ -3,7 +3,7 @@
 public class WizardCardDeck
 {
     public List<WizardCard> Deck { get; set; }
-    public static string?[] Species = { "Humans", "Giants", "Dwarfs", "Elves" };
+    public static string[] Species = { "Humans", "Giants", "Dwarfs", "Elves" };
     public WizardCardDeck()
     {
         var cards = new List<WizardCard>();

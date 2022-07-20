@@ -2,14 +2,37 @@
 
 public class WizardLogic
 {
-    public static List<WizardPlayer> CreatePlayers(int playerCount, string[] names)
+    public static List<WizardPlayer> CreatePlayers(int playerCount, Dictionary<string, bool> names)
     {
         var playerList = new List<WizardPlayer>();
-        for (var i = 0; i < playerCount; i++)
+        var i = 0;
+        foreach(var name in names)
         {
-            playerList.Add(new WizardPlayer(i, names[i]));
+            playerList.Add(new WizardPlayer(i, name.Key, name.Value, new List<WizardCard>()));
+            i++;
         }
         return playerList;
+    }
+    public static bool ValidateBool(string input)
+    {
+        if (bool.TryParse(input, out bool result))
+        {
+            return result;
+        }
+        switch (input.ToLower())
+        {
+            case "true":
+            case "yes":
+            case "y":
+            case "1":
+                return true;
+            case "false":
+            case "no":
+            case "n":
+            case "0":
+                return false;
+        }
+        return false;
     }
 
     public static void CalculateExp(WizardPlayer player)
@@ -26,14 +49,14 @@ public class WizardLogic
         }
     }
 
-    public static List<WizardPlayer> SortWizardPlayers(List<WizardPlayer> wizardPlayers, int indexofFirst)
+    public static List<WizardPlayer> SortWizardPlayers(List<WizardPlayer> wizardPlayers, WizardPlayer firstplayer)
     {
-        for (var i = 0; i < indexofFirst; i++)
+        var indexOfFirst = wizardPlayers.ToList().IndexOf(firstplayer);
+        for (var i = 0; i < indexOfFirst; i++)
         {
             wizardPlayers.Add(wizardPlayers.First());
             wizardPlayers.RemoveAt(0);
         }
-
         return wizardPlayers;
     }
 
@@ -70,17 +93,17 @@ public class WizardLogic
         return playedBy[stack.Deck.IndexOf(highestCard)];
     }
 
-    public static WizardCard CheckCard(List<WizardCard> OnHandCards, string? input)
+    public static WizardCard CheckCard(List<WizardCard> onHandCards, string? input)
     {
-        if (string.IsNullOrEmpty(input) && OnHandCards.Count > 1) return null;
-        if (string.IsNullOrEmpty(input) && OnHandCards.Count == 1) return OnHandCards.First();
-        foreach (var wizardCard in OnHandCards.Where(wizardCard => wizardCard.Title == input | input == wizardCard.Title[..1]))
+        if (string.IsNullOrEmpty(input) && onHandCards.Count > 1) return null;
+        if (string.IsNullOrEmpty(input) && onHandCards.Count == 1) return onHandCards.First();
+        foreach (var wizardCard in onHandCards.Where(wizardCard => wizardCard.Title == input | input == wizardCard.Title[..1]))
         {
             return wizardCard;
         }
-        if (int.TryParse(input, out var result) && result <= OnHandCards.Count && result > 0)
+        if (int.TryParse(input, out var result) && result <= onHandCards.Count && result > 0)
         {
-            return OnHandCards[result- 1];
+            return onHandCards[result - 1];
         }
         return null;
     }
@@ -96,7 +119,6 @@ public class WizardLogic
     }
     public static ConsoleColor ValidateChosenColor(string input)
     {
-        if (string.IsNullOrEmpty(input)) return ConsoleColor.Black;
         if (Enum.TryParse(input, out ConsoleColor resultColor) |
             int.TryParse(input, out var colorIndex))
         {
@@ -140,14 +162,15 @@ public class WizardLogic
     {
         return new WizardCardDeck();
     }
-    public static string? GetTrumpSpecies(WizardCardDeck mainCardDeck)
+
+    public static string GetTrumpSpecies(WizardCardDeck mainCardDeck)
     {
-        if (mainCardDeck.Deck.Count <= 0) return null;
+        if (mainCardDeck.Deck.Count <= 0) return "failed";
         var trumpCard = HandsOutCards(1, 1, mainCardDeck);
         return trumpCard.First().First().Value switch
         {
             14 => trumpCard.First().First().Title,
-            0 => string.Empty,
+            0 => trumpCard.First().First().Title,
             _ => trumpCard.First().First().Species
         };
     }
@@ -177,7 +200,7 @@ public class WizardLogic
     {
         var rand = new Random();
         var cards = new List<WizardCard>[playerCount];
-        for(var playerIndex = 0; playerIndex < playerCount; playerIndex++)
+        for (var playerIndex = 0; playerIndex < playerCount; playerIndex++)
         {
             cards[playerIndex] = new List<WizardCard>();
         }

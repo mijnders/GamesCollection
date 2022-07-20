@@ -2,11 +2,11 @@
 
 public class WizardCard
 {
-    internal string? Title { get; set; }
-    internal string? Species { get; set; }
+    internal string Title { get; set; }
+    internal string Species { get; set; }
     internal int Value { get; set; }
 
-    public WizardCard(string? species, int value)
+    public WizardCard(string species, int value)
     {
         Species = species;
         this.Value = value;

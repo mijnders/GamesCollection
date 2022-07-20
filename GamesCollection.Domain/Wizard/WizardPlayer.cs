@@ -8,12 +8,13 @@ public class WizardPlayer
     internal List<WizardCard> OnHandCards { get; set; }
     internal int Prediction { get; set; }
     internal int Tricks { get; set; }
-    internal bool COM { get; set; }
+    internal bool Com { get; set; }
 
-    public WizardPlayer(int id, string name)
+    public WizardPlayer(int id, string name, bool isCom, List<WizardCard> onHandCards)
     {
         this.Id = id;
         this.Name = name;
-        COM = false;
+        Com = isCom;
+        OnHandCards = onHandCards;
     }
 }
