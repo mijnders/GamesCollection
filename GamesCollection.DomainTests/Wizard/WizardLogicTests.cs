@@ -1,12 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using GamesCollection.Domain.Wizard;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GamesCollection.Domain.Wizard;
+using Microsoft.VisualBasic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace GamesCollection.Domain.Wizard.Tests
+namespace GamesCollection.DomainTests.Wizard
 {
     [TestClass()]
     public class WizardLogicTests
@@ -16,16 +12,38 @@ namespace GamesCollection.Domain.Wizard.Tests
             0, 1
         };
 
-        private WizardCardDeck _stack = new WizardCardDeck()
-        {
-            Deck = new List<WizardCard>()
-        };
-
+        private WizardCardDeck _stack = new WizardCardDeck();
         [TestMethod()]
-        public void CheckPlayedCardsTest()
+        public void CheckPlayedCardsOnlyJester()
         {
-
-            Assert.Fail();
+            var stack = new WizardCardDeck()
+            {
+                Deck = new List<WizardCard>()
+                {
+                    new WizardCard("Dwarfs", 0),
+                    new WizardCard("Giants", 0),
+                    new WizardCard("Humans", 0),
+                    new WizardCard("Elves", 0)
+                }
+            };
+            var index = WizardLogic.CheckPlayedCards(_playedBy, stack, "Humans");
+            Assert.AreEqual(0, index);
+        }
+        [TestMethod()]
+        public void CheckPlayedCardsOnlyWizard()
+        {
+            var stack = new WizardCardDeck()
+            {
+                Deck = new List<WizardCard>()
+                {
+                    new WizardCard("Dwarfs", 14),
+                    new WizardCard("Giants", 14),
+                    new WizardCard("Humans", 14),
+                    new WizardCard("Elves", 14)
+                }
+            };
+            var index = WizardLogic.CheckPlayedCards(_playedBy, stack, "Humans");
+            Assert.AreEqual(0, index);
         }
     }
 }

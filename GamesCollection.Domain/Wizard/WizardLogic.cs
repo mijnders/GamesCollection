@@ -84,7 +84,7 @@ public class WizardLogic
         }
 
         var card1 = highestCard;
-        var firstColorCardsList = stack.Deck.Where(card => card.Species == card1.Species);
+        var firstColorCardsList = stack.Deck.Where(card => card.Species == card1.Species && card.Value != 14 && card.Value != 0);
         foreach (var wizardCard in firstColorCardsList)
         {
             if (highestCard != null && wizardCard.Value > highestCard.Value)
@@ -92,7 +92,10 @@ public class WizardLogic
                 highestCard = wizardCard;
             }
         }
-
+        foreach (var card in stack.Deck.Where(card => card.Value > highestCard.Value))
+        {
+            highestCard = card;
+        }
         return highestCard != null ? playedBy[stack.Deck.IndexOf(highestCard)] : -1;
     }
 

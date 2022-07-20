@@ -20,7 +20,7 @@
                     case 0:
                         break;
                     default:
-                        if (GetChance(card, trump, copyMainDeck) < 22)
+                        if (GetChance(card, trump, copyMainDeck) <= 33)
                         {
                             prediction++;
                         }
@@ -40,7 +40,7 @@
             };
             var strongerCards = (from deckCard in copyMainDeck.Deck where card != null let fakeStack = new WizardCardDeck() { Deck = new List<WizardCard>() { card, deckCard } } where WizardLogic.CheckPlayedCards(fakePlayedBy, fakeStack, trump) != 0 select deckCard).ToList();
 
-            return (double.Parse(strongerCards.Count.ToString()) / double.Parse(copyMainDeck.Deck.Count.ToString())) * 100;
+            return Math.Round(double.Parse(strongerCards.Count.ToString()) / double.Parse(copyMainDeck.Deck.Count.ToString()) * 100);
         }
 
         public static WizardCard PlayCard(WizardPlayer player, string trump, WizardCardDeck stack, List<int> playedBy)
