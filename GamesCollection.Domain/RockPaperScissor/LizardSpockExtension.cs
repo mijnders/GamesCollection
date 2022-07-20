@@ -2,7 +2,7 @@
 
 internal class LizardSpockExtension
 {
-    private static readonly string?[] Shapes = { "rock", "paper", "scissors", "lizard", "spock" };
+    private static readonly string[] Shapes = { "rock", "paper", "scissors", "lizard", "spock" };
 
     private static readonly string[] Rules =
     {

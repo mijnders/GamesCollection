@@ -60,7 +60,7 @@ public class WizardLogic
         return wizardPlayers;
     }
 
-    public static int CheckPlayedCards(List<int> playedBy, WizardCardDeck stack, string? trumpSpecies)
+    public static int CheckPlayedCards(List<int> playedBy, WizardCardDeck stack, string trumpSpecies)
     {
         var highestCard = stack.Deck[0];
         foreach (var card in stack.Deck.Where(_ => highestCard is { Species: null }))
@@ -96,7 +96,7 @@ public class WizardLogic
         return highestCard != null ? playedBy[stack.Deck.IndexOf(highestCard)] : -1;
     }
 
-    public static WizardCard? CheckCard(List<WizardCard> onHandCards, string? input)
+    public static WizardCard CheckCard(List<WizardCard> onHandCards, string input)
     {
         if (string.IsNullOrEmpty(input) && onHandCards.Count > 1) return null;
         if (string.IsNullOrEmpty(input) && onHandCards.Count == 1) return onHandCards.First();
@@ -111,7 +111,7 @@ public class WizardLogic
         return null;
     }
 
-    public static WizardCard? CheckServe(List<WizardCard> onHandCards, WizardCard? card, string? species)
+    public static WizardCard CheckServe(List<WizardCard> onHandCards, WizardCard card, string species)
     {
         if (card != null && string.IsNullOrEmpty(species) | card.Value is 14 or 0) return card;
         if (card != null && card.Species == species)
@@ -180,7 +180,7 @@ public class WizardLogic
         };
     }
 
-    public static ConsoleColor GetConsoleColor(string? species, int value)
+    public static ConsoleColor GetConsoleColor(string species, int value)
     {
         return value switch
         {
@@ -190,7 +190,7 @@ public class WizardLogic
         };
     }
 
-    public static ConsoleColor CheckForSpecies(string? species)
+    public static ConsoleColor CheckForSpecies(string species)
     {
         return species switch
         {

@@ -2,7 +2,7 @@
 
 public class WizardCard
 {
-    internal string Title { get; set; }
+    public string Title { get; set; }
     internal string Species { get; set; }
     internal int Value { get; set; }
 
@@ -12,7 +12,7 @@ public class WizardCard
         this.Value = value;
         Title = value switch
         {
-            0 => "J",
+            0 => "Jester",
             14 => "Wizard",
             _ => species[..1] + value
         };

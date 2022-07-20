@@ -2,7 +2,7 @@
 
 internal class BaseGame
 {
-    private static readonly string?[] Shapes = { "rock", "paper", "scissors" };
+    private static readonly string[] Shapes = { "rock", "paper", "scissors" };
 
     private static readonly string[] Rules = { "Scissors cuts Paper", "Paper covers Rock", "(and as it always has) Rock crushes Scissors", };
 

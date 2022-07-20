@@ -100,7 +100,7 @@ internal class WizardDomain
             Console.Write(Translator.Translate("Playing") + ":\t");
             var input = Console.ReadLine();
             var card = CheckCard(currentPlayer.OnHandCards, input);
-            string? firstSpecies = null;
+            string firstSpecies = "";
             if (stack.Deck.Count > 0)
             {
                 if (stack.Deck.First().Value is 14 or 0)
@@ -145,7 +145,7 @@ internal class WizardDomain
             }
             else
             {
-                return WizardCom.CountPrediction(currentPlayer, trumpSpecies);
+                return WizardCom.CountPrediction(currentPlayer.OnHandCards, trumpSpecies);
             }
         } while (!Program.IsValid);
         return 0;
@@ -316,7 +316,7 @@ internal class WizardDomain
         };
     }
 
-    private static void DisplayCard(WizardCard? wizardCard)
+    private static void DisplayCard(WizardCard wizardCard)
     {
         if (wizardCard != null)
         {

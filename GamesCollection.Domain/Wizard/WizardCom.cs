@@ -2,20 +2,15 @@
 {
     public class WizardCom
     {
-        public static int CountPrediction(WizardPlayer player, string trump)
+        public static int CountPrediction(List<WizardCard> onHandCards, string trump)
         {
             var prediction = 0;
             var copyMainDeck = new WizardCardDeck();
-            foreach (var card in player.OnHandCards)
+            foreach (var card in onHandCards)
             {
                 copyMainDeck.Deck.Remove(copyMainDeck.Deck.First(item => item.Value == card.Value && item.Species == card.Species));
             }
-            var indexes = (from mainCard in from card in player.OnHandCards from mainCard in copyMainDeck.Deck where card.Value == mainCard.Value && card.Species == mainCard.Species select mainCard select copyMainDeck.Deck.IndexOf(mainCard)).ToList();
-            foreach (var index in indexes)
-            {
-                copyMainDeck.Deck.RemoveAt(index);
-            }
-            foreach (var card in player.OnHandCards)
+            foreach (var card in onHandCards)
             {
                 switch (card.Value)
                 {
@@ -25,7 +20,7 @@
                     case 0:
                         break;
                     default:
-                        if (GetChance(card, trump, copyMainDeck) < 20)
+                        if (GetChance(card, trump, copyMainDeck) < 22)
                         {
                             prediction++;
                         }
@@ -36,7 +31,7 @@
             return prediction;
         }
 
-        private static double GetChance(WizardCard card, string trump, WizardCardDeck copyMainDeck)
+        public static double GetChance(WizardCard card, string trump, WizardCardDeck copyMainDeck)
         {
             var fakePlayedBy = new List<int>
             {
@@ -48,7 +43,7 @@
             return (double.Parse(strongerCards.Count.ToString()) / double.Parse(copyMainDeck.Deck.Count.ToString())) * 100;
         }
 
-        public static WizardCard? PlayCard(WizardPlayer player, string trump, WizardCardDeck stack, List<int> playedBy)
+        public static WizardCard PlayCard(WizardPlayer player, string trump, WizardCardDeck stack, List<int> playedBy)
         {
             if (player.OnHandCards.Count == 1)
             {
@@ -130,7 +125,7 @@
             return "all";
         }
 
-        private static WizardCard? GetLowestCard(IReadOnlyCollection<WizardCard?> cards)
+        private static WizardCard GetLowestCard(IReadOnlyCollection<WizardCard> cards)
         {
             var lowestCard = cards.First();
             if (cards.Count <= 1) return lowestCard;
@@ -142,7 +137,7 @@
             return lowestCard;
         }
 
-        private static WizardCard? GetHighestCard(IReadOnlyCollection<WizardCard?> cards)
+        private static WizardCard GetHighestCard(IReadOnlyCollection<WizardCard> cards)
         {
             var lowestCard = cards.First();
             if (cards.Count <= 1) return lowestCard;
