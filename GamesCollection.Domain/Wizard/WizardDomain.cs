@@ -34,9 +34,13 @@ internal class WizardDomain
                 {
                     BuildUpInterface(trumpSpecies, stack, wizardPlayers);
                     BuildUpPlayerInterface(currentPlayer);
-                    var card = currentPlayer.Com ? WizardCom.PlayCard(currentPlayer, trumpSpecies, stack, playedBy) : PlayCard(currentPlayer, stack, trumpSpecies, wizardPlayers);
-                    stack.Deck.Add(card);
-                    currentPlayer.OnHandCards.Remove(card);
+                    var card = currentPlayer.Com ? WizardCom.PlayCard(currentPlayer, trumpSpecies, stack, playedBy) : PlayCard(currentPlayer, stack);
+                    if (card != null)
+                    {
+                        stack.Deck.Add(card);
+                        currentPlayer.OnHandCards.Remove(card);
+                    }
+
                     playedBy.Add(currentPlayer.Id);
                     Console.ReadKey();
 
@@ -87,7 +91,7 @@ internal class WizardDomain
         Console.ReadKey();
     }
 
-    private static WizardCard PlayCard(WizardPlayer currentPlayer, WizardCardDeck stack, string trumpSpecies, List<WizardPlayer> wizardPlayers)
+    private static WizardCard PlayCard(WizardPlayer currentPlayer, WizardCardDeck stack)
     {
         do
         {
@@ -304,24 +308,28 @@ internal class WizardDomain
         };
     }
 
-    private static void DisplayCard(WizardCard wizardCard)
+    private static void DisplayCard(WizardCard? wizardCard)
     {
-        Console.ForegroundColor = GetConsoleColor(wizardCard.Species, wizardCard.Value);
-        switch (wizardCard.Value)
+        if (wizardCard != null)
         {
-            case 0:
-                Console.Write("J");
-                break;
-            case 14:
-                Console.Write("W");
-                break;
-            case -1:
-                Console.Write(wizardCard.Species);
-                break;
-            default:
-                Console.Write(wizardCard.Species[..1] + wizardCard.Value);
-                break;
+            Console.ForegroundColor = GetConsoleColor(wizardCard.Species, wizardCard.Value);
+            switch (wizardCard.Value)
+            {
+                case 0:
+                    Console.Write("J");
+                    break;
+                case 14:
+                    Console.Write("W");
+                    break;
+                case -1:
+                    Console.Write(wizardCard.Species);
+                    break;
+                default:
+                    Console.Write(wizardCard.Species[..1] + wizardCard.Value);
+                    break;
+            }
         }
+
         Console.Write(" ");
         Console.ResetColor();
     }

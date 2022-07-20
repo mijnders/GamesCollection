@@ -1,6 +1,6 @@
-﻿using System.Text;
-using GamesCollection.Domain.RockPaperScissor;
+﻿using GamesCollection.Domain.RockPaperScissor;
 using GamesCollection.Domain.Wizard;
+using System.Text;
 
 namespace GamesCollection.Domain;
 
@@ -44,7 +44,7 @@ public class Program
             if (!string.IsNullOrEmpty(input) && int.TryParse(input, out var result))
             {
                 IsValid = ValidateInteger(result, new Range(games.IndexOf(games.First()), games.IndexOf(games.Last())));
-                if(IsValid)StartGame(Translator.TranslateBackwards(games[result]));
+                if (IsValid) StartGame(Translator.TranslateBackwards(games[result]));
             }
             else if (!string.IsNullOrEmpty(input) && Translator.TranslateBackwards(input).ToLower() == "exit" | input.ToLower() == "x" | input.ToLower() == "close" | input == "0")
             {
@@ -130,7 +130,7 @@ public class Program
 
     public static void ClearConsole(string name, bool clear)
     {
-        if(clear) Console.Clear();
+        if (clear) Console.Clear();
         else Console.WriteLine();
         var width = (Console.WindowWidth - Translator.Translate(name).Length) / 2;
         for (var i = 0; i < width; i++) Console.Write("-");
@@ -140,7 +140,7 @@ public class Program
     }
 
     public static bool ValidateInteger(int result, Range range)
-        
+
     {
         IsValid = result >= range.Start.Value && result <= range.End.Value;
         return IsValid;
