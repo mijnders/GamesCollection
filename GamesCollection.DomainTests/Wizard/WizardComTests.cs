@@ -1,6 +1,7 @@
 ﻿using GamesCollection.Domain.Wizard;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+
 namespace GamesCollection.DomainTests.Wizard
 {
     [TestClass()]
@@ -11,7 +12,7 @@ namespace GamesCollection.DomainTests.Wizard
         {
             //Arrange
             var result = "";
-            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "WizardTests");
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "WizardChance");
             var mainDeck = new WizardCardDeck();
             var trump = "Jester";
             var chances = new List<double>();
@@ -36,7 +37,7 @@ namespace GamesCollection.DomainTests.Wizard
         {
             //Arrange
             var result = "";
-            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "WizardTests");
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "WizardChance");
             var mainDeck = new WizardCardDeck();
             var trump = "Elves";
             var chances = new List<double>();
@@ -60,7 +61,7 @@ namespace GamesCollection.DomainTests.Wizard
         {
             //Arrange
             var result = "";
-            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "WizardTests");
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "WizardChance");
             var mainDeck = new WizardCardDeck();
             var trump = "Dwarfs";
             var chances = new List<double>();
@@ -84,7 +85,7 @@ namespace GamesCollection.DomainTests.Wizard
         {
             //Arrange
             var result = "";
-            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "WizardTests");
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "WizardChance");
             var mainDeck = new WizardCardDeck();
             var trump = "Giants";
             var chances = new List<double>();
@@ -108,7 +109,7 @@ namespace GamesCollection.DomainTests.Wizard
         {
             //Arrange
             var result = "";
-            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "WizardTests");
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "WizardChance");
             var mainDeck = new WizardCardDeck();
             var trump = "Humans";
             var chances = new List<double>();

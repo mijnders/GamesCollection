@@ -4,6 +4,8 @@ public class WizardLogic
 {
     public static List<WizardPlayer> CreatePlayers(int playerCount, Dictionary<string, bool> names)
     {
+        var random = new Random();
+        names = RandomizeDictionary(names);
         var playerList = new List<WizardPlayer>();
         var i = 0;
         foreach (var name in names)
@@ -13,9 +15,26 @@ public class WizardLogic
         }
         return playerList;
     }
+
+    private static Dictionary<string, bool> RandomizeDictionary(Dictionary<string, bool> names)
+    {
+        var keys = names.Keys.ToList();
+        var values = names.Values.ToList();
+        var result = new Dictionary<string, bool>();
+        var random = new Random();
+        while (keys.Count > 0)
+        {
+            var randInt = random.Next(keys.Count);
+            result.Add(keys[randInt], values[randInt]);
+            keys.RemoveAt(randInt);
+            values.RemoveAt(randInt);
+        }
+        return result;
+    }
+
     public static bool ValidateBool(string input)
     {
-        if (bool.TryParse(input, out bool result))
+        if (bool.TryParse(input, out var result))
         {
             return result;
         }
@@ -82,7 +101,6 @@ public class WizardLogic
             }
             return playedBy[stack.Deck.IndexOf(highestCard)];
         }
-
         var card1 = highestCard;
         var firstColorCardsList = stack.Deck.Where(card => card.Species == card1.Species && card.Value != 14 && card.Value != 0);
         foreach (var wizardCard in firstColorCardsList)
@@ -92,9 +110,14 @@ public class WizardLogic
                 highestCard = wizardCard;
             }
         }
-        foreach (var card in stack.Deck.Where(card => card.Value > highestCard.Value))
+
+        if (firstColorCardsList.Any())
+            return highestCard != null ? playedBy[stack.Deck.IndexOf(highestCard)] : -1;
         {
-            highestCard = card;
+            foreach (var card in stack.Deck.Where(card => card.Value > highestCard.Value))
+            {
+                highestCard = card;
+            }
         }
         return highestCard != null ? playedBy[stack.Deck.IndexOf(highestCard)] : -1;
     }

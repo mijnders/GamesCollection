@@ -1,10 +1,20 @@
-﻿namespace GamesCollection.Domain.Wizard
+﻿using System.Runtime.InteropServices.ComTypes;
+using Microsoft.VisualBasic;
+using Microsoft.VisualBasic.CompilerServices;
+
+namespace GamesCollection.Domain.Wizard
 {
     public class WizardCom
     {
-        public static int CountPrediction(List<WizardCard> onHandCards, string trump)
+        public static int CountPrediction(WizardPlayer player, string trump, int stitchRound, int indexOfPlayer, int playerCount)
         {
             var prediction = 0;
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), $"WizardChance\\{player.Name}\\{player.Name}_{player.Id}_{stitchRound}.txt");
+            if (!Directory.Exists(Path.GetDirectoryName(path)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            }
+            var onHandCards = player.OnHandCards;
             var copyMainDeck = new WizardCardDeck();
             foreach (var card in onHandCards)
             {
@@ -12,23 +22,38 @@
             }
             foreach (var card in onHandCards)
             {
-                switch (card.Value)
+                var chance = GetChance(card, trump, copyMainDeck);
+                if (stitchRound > playerCount)
                 {
-                    case 14:
+                    if (card.Species == trump && chance <= 15)
+                    {
                         prediction++;
-                        break;
-                    case 0:
-                        break;
-                    default:
-                        if (GetChance(card, trump, copyMainDeck) <= 33)
-                        {
-                            prediction++;
-                        }
-
-                        break;
+                        File.AppendAllText(path, card.Title + " = " + chance + "%\n");
+                    }
+                    else if (card.Species != trump && chance <= 33.3)
+                    {
+                        prediction++;
+                        File.AppendAllText(path, card.Title + " = " + chance + "%\n");
+                    }
                 }
+                else
+                {
+                    if (card.Species == trump && chance <= 33.3)
+                    {
+                        prediction++;
+                        File.AppendAllText(path, card.Title + " = " + chance + "%\n");
+                    }
+                    else if (card.Species != trump && chance <= 15)
+                    {
+                        prediction++;
+                        File.AppendAllText(path, card.Title + " = " + chance + "%\n");
+                    }
+                }
+               
             }
-            return prediction;
+            if (prediction - stitchRound / playerCount < 2) return prediction;
+            var rand = new Random();
+            return rand.Next(stitchRound / playerCount, prediction);
         }
 
         public static double GetChance(WizardCard card, string trump, WizardCardDeck copyMainDeck)
@@ -38,9 +63,24 @@
                 0,
                 1
             };
-            var strongerCards = (from deckCard in copyMainDeck.Deck where card != null let fakeStack = new WizardCardDeck() { Deck = new List<WizardCard>() { card, deckCard } } where WizardLogic.CheckPlayedCards(fakePlayedBy, fakeStack, trump) != 0 select deckCard).ToList();
+            var strongerCards = new List<WizardCard>();
+            foreach (var mdCard in copyMainDeck.Deck)
+            {
+                var fakeStack = new WizardCardDeck()
+                {
+                    Deck = new List<WizardCard>()
+                    {
+                        card,
+                        mdCard
+                    }
+                };
+                if (WizardLogic.CheckPlayedCards(fakePlayedBy, fakeStack, trump) != 0)
+                {
+                    strongerCards.Add(mdCard);
+                }
+            }
 
-            return Math.Round(double.Parse(strongerCards.Count.ToString()) / double.Parse(copyMainDeck.Deck.Count.ToString()) * 100);
+            return Math.Round(double.Parse(strongerCards.Count.ToString()) / double.Parse(copyMainDeck.Deck.Count.ToString()) * 100, 1);
         }
 
         public static WizardCard PlayCard(WizardPlayer player, string trump, WizardCardDeck stack, List<int> playedBy)
@@ -53,7 +93,12 @@
             var speciesToServe = GetSpeciesToServe(stack);
             var playOffensive = player.Tricks < player.Prediction;
             if (speciesToServe == "all")
-                return playOffensive ? GetHighestCard(player.OnHandCards) : GetLowestCard(player.OnHandCards);
+            {
+                var any = stack.Deck.Any(card => card.Value == 14);
+
+                return playOffensive && !any ? GetHighestCard(player.OnHandCards, trump) : GetLowestCard(player.OnHandCards, trump);
+            }
+
             var listList = new List<List<WizardCard>>
             {
                 player.OnHandCards.Where(card => card.Species == speciesToServe && card.Value != 14 && card.Value != 0)
@@ -102,10 +147,10 @@
                     playedBy.Remove(player.Id);
                 }
 
-                return GetLowestCard(list);
+                return GetLowestCard(list, trump);
             }
 
-            return playOffensive ? GetHighestCard(player.OnHandCards) : GetLowestCard(player.OnHandCards);
+            return playOffensive ? GetHighestCard(player.OnHandCards, trump) : GetLowestCard(player.OnHandCards, trump);
         }
 
         private static string GetSpeciesToServe(WizardCardDeck stack)
@@ -116,7 +161,8 @@
                 {
                     return card.Species;
                 }
-                else if (card.Value == 14)
+
+                if (card.Value == 14)
                 {
                     return "all";
                 }
@@ -125,11 +171,11 @@
             return "all";
         }
 
-        private static WizardCard GetLowestCard(IReadOnlyCollection<WizardCard> cards)
+        private static WizardCard GetLowestCard(IReadOnlyCollection<WizardCard> cards, string trump)
         {
             var lowestCard = cards.First();
             if (cards.Count <= 1) return lowestCard;
-            foreach (var card in cards.Where(card => lowestCard != null && card != null && card.Value < lowestCard.Value))
+            foreach (var card in cards.Where(card => card.Species != trump && card.Value < lowestCard.Value))
             {
                 lowestCard = card;
             }
@@ -137,16 +183,16 @@
             return lowestCard;
         }
 
-        private static WizardCard GetHighestCard(IReadOnlyCollection<WizardCard> cards)
+        private static WizardCard GetHighestCard(IReadOnlyCollection<WizardCard> cards, string trump)
         {
-            var lowestCard = cards.First();
-            if (cards.Count <= 1) return lowestCard;
-            foreach (var card in cards.Where(card => lowestCard != null && card != null && card.Value > lowestCard.Value))
+            var highestCard = cards.First();
+            if (cards.Count <= 1) return highestCard;
+            foreach (var card in cards.Where(card => card.Species != trump && card.Value > highestCard.Value))
             {
-                lowestCard = card;
+                highestCard = card;
             }
 
-            return lowestCard;
+            return highestCard;
         }
 
         public static ConsoleColor ChooseTrumpColor(WizardPlayer player)

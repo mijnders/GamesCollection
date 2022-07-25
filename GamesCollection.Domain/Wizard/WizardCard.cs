@@ -3,7 +3,7 @@
 public class WizardCard
 {
     public string Title { get; set; }
-    internal string Species { get; set; }
+    public string Species { get; set; }
     public int Value { get; set; }
 
     public WizardCard(string species, int value)
