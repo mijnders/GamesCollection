@@ -9,7 +9,7 @@ public class WizardCard
     public WizardCard(string species, int value)
     {
         Species = species;
-        this.Value = value;
+        Value = value;
         Title = value switch
         {
             0 => "Jester",

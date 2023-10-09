@@ -1,6 +1,6 @@
 ﻿namespace GamesCollection.Domain.Wizard;
 
-public class WizardLogic
+public static class WizardLogic
 {
     public static List<WizardPlayer> CreatePlayers(int playerCount, Dictionary<string, bool> names)
     {
@@ -10,7 +10,7 @@ public class WizardLogic
         var i = 0;
         foreach (var name in names)
         {
-            playerList.Add(new WizardPlayer(i, name.Key, name.Value, new List<WizardCard>()));
+            playerList.Add(new WizardPlayer(i, name.Key, name.Value, new List<WizardCard?>()));
             i++;
         }
         return playerList;
@@ -122,7 +122,7 @@ public class WizardLogic
         return highestCard != null ? playedBy[stack.Deck.IndexOf(highestCard)] : -1;
     }
 
-    public static WizardCard CheckCard(List<WizardCard> onHandCards, string input)
+    public static WizardCard? CheckCard(List<WizardCard?> onHandCards, string input)
     {
         if (string.IsNullOrEmpty(input) && onHandCards.Count > 1) return null;
         if (string.IsNullOrEmpty(input) && onHandCards.Count == 1) return onHandCards.First();
@@ -137,7 +137,7 @@ public class WizardLogic
         return null;
     }
 
-    public static WizardCard CheckServe(List<WizardCard> onHandCards, WizardCard card, string species)
+    public static WizardCard CheckServe(List<WizardCard?> onHandCards, WizardCard card, string species)
     {
         if (card != null && string.IsNullOrEmpty(species) | card.Value is 14 or 0) return card;
         if (card != null && card.Species == species)
@@ -227,13 +227,13 @@ public class WizardLogic
             _ => ConsoleColor.Black,
         };
     }
-    public static List<WizardCard>[] HandsOutCards(int round, int playerCount, WizardCardDeck mainCardDeck)
+    public static List<WizardCard?>[] HandsOutCards(int round, int playerCount, WizardCardDeck mainCardDeck)
     {
         var rand = new Random();
-        var cards = new List<WizardCard>[playerCount];
+        var cards = new List<WizardCard?>[playerCount];
         for (var playerIndex = 0; playerIndex < playerCount; playerIndex++)
         {
-            cards[playerIndex] = new List<WizardCard>();
+            cards[playerIndex] = new List<WizardCard?>();
         }
         for (var roundIndex = 0; roundIndex < round; roundIndex++)
         {

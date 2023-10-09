@@ -1,9 +1,9 @@
 ﻿namespace GamesCollection.Domain;
 
-public class LoadFiles
+public static class LoadFiles
 {
-    public static string GameFile = "";
-    public static string LanguagesFile = "";
+    private static string _gameFile = "";
+    private static string _languagesFile = "";
     public static void LoadOnStartup()
     {
         var files = Directory.GetFiles(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data"));
@@ -11,28 +11,28 @@ public class LoadFiles
         {
             if (Path.GetFileNameWithoutExtension(file) == "Games")
             {
-                GameFile = file;
+                _gameFile = file;
             }
             if (Path.GetFileNameWithoutExtension(file) == "Languages")
             {
-                LanguagesFile = file;
+                _languagesFile = file;
             }
         }
     }
 
     public static List<string> LoadGames()
     {
-        return File.ReadAllLines(GameFile).Select(Translator.Translate).ToList();
+        return File.ReadAllLines(_gameFile).Select(Translator.Translate).ToList();
     }
     public static List<string[]> LoadLanguages()
     {
-        if (File.Exists(LanguagesFile))
+        if (File.Exists(_languagesFile))
         {
             while (true)
             {
                 try
                 {
-                    return File.ReadAllLines(LanguagesFile).Select(s => s.Split(";")).ToList();
+                    return File.ReadAllLines(_languagesFile).Select(s => s.Split(";")).ToList();
                 }
                 catch (IOException)
                 {

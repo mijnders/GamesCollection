@@ -1,6 +1,6 @@
 ﻿namespace GamesCollection.Domain.RockPaperScissor;
 
-internal class BaseGame
+internal static class BaseGame
 {
     private static readonly string[] Shapes = { "rock", "paper", "scissors" };
 

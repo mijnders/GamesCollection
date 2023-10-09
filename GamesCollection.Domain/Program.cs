@@ -4,7 +4,7 @@ using System.Text;
 
 namespace GamesCollection.Domain;
 
-public class Program
+public static class Program
 {
 
     public static bool IsValid { get; set; }
@@ -46,7 +46,7 @@ public class Program
                 IsValid = ValidateInteger(result, new Range(games.IndexOf(games.First()), games.IndexOf(games.Last())));
                 if (IsValid) StartGame(Translator.TranslateBackwards(games[result]));
             }
-            else if (!string.IsNullOrEmpty(input) && Translator.TranslateBackwards(input).ToLower() == "exit" | input.ToLower() == "x" | input.ToLower() == "close" | input == "0")
+            else if (!string.IsNullOrEmpty(input) && Translator.TranslateBackwards(input).ToLower() == "exit" || input?.ToLower() == "x" || input?.ToLower() == "close" || input == "0")
             {
                 break;
             }
@@ -118,7 +118,7 @@ public class Program
         IsValid = true;
     }
 
-    public static List<string> Sort(List<string> games)
+    private static List<string> Sort(List<string> games)
     {
         games.Sort();
         var exit = Translator.Translate("Exit");
@@ -146,7 +146,7 @@ public class Program
         return IsValid;
     }
 
-    public static void StartGame(string game)
+    private static void StartGame(string game)
     {
         ClearConsole(Translator.Translate(game), true);
         switch (game)

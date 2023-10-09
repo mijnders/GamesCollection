@@ -2,7 +2,7 @@
 
 namespace GamesCollection.Domain.Wizard;
 
-internal class WizardDomain
+internal static class WizardDomain
 {
     public static void StartPoint()
     {
@@ -95,34 +95,37 @@ internal class WizardDomain
         
     }
 
-    private static WizardCard PlayCard(WizardPlayer currentPlayer, WizardCardDeck stack)
+    private static WizardCard? PlayCard(WizardPlayer currentPlayer, WizardCardDeck stack)
     {
         do
         {
             if (!Program.IsValid) Program.FalseInput();
             Console.Write(Translator.Translate("Playing") + ":\t");
             var input = Console.ReadLine();
-            var card = CheckCard(currentPlayer.OnHandCards, input);
-            string firstSpecies = "";
-            if (stack.Deck.Count > 0)
+            if (input != null)
             {
-                if (stack.Deck.First().Value is 14 or 0)
+                var card = CheckCard(currentPlayer.OnHandCards, input);
+                string firstSpecies = "";
+                if (stack.Deck.Count > 0)
                 {
-                    foreach (var wizardCard in stack.Deck.Where(wizardCard => wizardCard.Value != 14 && wizardCard.Value != 0))
+                    if (stack.Deck.First().Value is 14 or 0)
                     {
-                        firstSpecies = wizardCard.Species;
-                        break;
+                        foreach (var wizardCard in stack.Deck.Where(wizardCard => wizardCard.Value != 14 && wizardCard.Value != 0))
+                        {
+                            firstSpecies = wizardCard.Species;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        firstSpecies = stack.Deck.First().Species;
                     }
                 }
-                else
+                card = CheckServe(currentPlayer.OnHandCards, card, firstSpecies);
+                if (card != null)
                 {
-                    firstSpecies = stack.Deck.First().Species;
+                    return card;
                 }
-            }
-            card = CheckServe(currentPlayer.OnHandCards, card, firstSpecies);
-            if (card != null)
-            {
-                return card;
             }
 
             Program.IsValid = false;
@@ -350,7 +353,7 @@ internal class WizardDomain
         };
     }
 
-    private static void DisplayCard(WizardCard wizardCard)
+    private static void DisplayCard(WizardCard? wizardCard)
     {
         if (wizardCard != null)
         {

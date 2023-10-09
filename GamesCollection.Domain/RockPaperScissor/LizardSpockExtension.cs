@@ -1,6 +1,6 @@
 ﻿namespace GamesCollection.Domain.RockPaperScissor;
 
-internal class LizardSpockExtension
+internal static class LizardSpockExtension
 {
     private static readonly string[] Shapes = { "rock", "paper", "scissors", "lizard", "spock" };
 

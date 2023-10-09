@@ -16,7 +16,7 @@ namespace GamesCollection.DomainTests.Wizard
             var mainDeck = new WizardCardDeck();
             var trump = "Jester";
             var chances = new List<double>();
-            var cards = new List<WizardCard>();
+            var cards = new List<WizardCard?>();
             //Act
             foreach (var wizardCard in mainDeck.Deck)
             {
@@ -41,7 +41,7 @@ namespace GamesCollection.DomainTests.Wizard
             var mainDeck = new WizardCardDeck();
             var trump = "Elves";
             var chances = new List<double>();
-            var cards = new List<WizardCard>();
+            var cards = new List<WizardCard?>();
             //Act
             foreach (var wizardCard in mainDeck.Deck)
             {
@@ -65,7 +65,7 @@ namespace GamesCollection.DomainTests.Wizard
             var mainDeck = new WizardCardDeck();
             var trump = "Dwarfs";
             var chances = new List<double>();
-            var cards = new List<WizardCard>();
+            var cards = new List<WizardCard?>();
             //Act
             foreach (var wizardCard in mainDeck.Deck)
             {
@@ -89,7 +89,7 @@ namespace GamesCollection.DomainTests.Wizard
             var mainDeck = new WizardCardDeck();
             var trump = "Giants";
             var chances = new List<double>();
-            var cards = new List<WizardCard>();
+            var cards = new List<WizardCard?>();
             //Act
             foreach (var wizardCard in mainDeck.Deck)
             {
@@ -113,7 +113,7 @@ namespace GamesCollection.DomainTests.Wizard
             var mainDeck = new WizardCardDeck();
             var trump = "Humans";
             var chances = new List<double>();
-            var cards = new List<WizardCard>();
+            var cards = new List<WizardCard?>();
             //Act
             foreach (var wizardCard in mainDeck.Deck)
             {

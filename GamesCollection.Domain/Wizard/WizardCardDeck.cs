@@ -2,8 +2,8 @@
 
 public class WizardCardDeck
 {
-    public List<WizardCard> Deck { get; set; }
-    public static string[] Species = { "Humans", "Giants", "Dwarfs", "Elves" };
+    public List<WizardCard?> Deck { get; init; }
+    public static readonly string[] Species = { "Humans", "Giants", "Dwarfs", "Elves" };
     public WizardCardDeck()
     {
         var cards = new List<WizardCard>();
